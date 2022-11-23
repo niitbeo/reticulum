@@ -21,7 +21,8 @@ defmodule RetWeb.Plugs.RedirectToMainDomain do
         nil
       end
 
-    if !matches_host(conn, main_host) && !matches_host(conn, secondary_host) && !matches_host(conn, cors_proxy_host) &&
+    if !matches_host(conn, main_host) && !matches_host(conn, secondary_host) &&
+         !matches_host(conn, cors_proxy_host) &&
          !matches_host(conn, assets_host) && !matches_host(conn, link_host) &&
          (!storage_host || !matches_host(conn, storage_host)) do
       conn
