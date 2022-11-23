@@ -11,12 +11,12 @@ defmodule Ret.WebPushSubscription do
   @push_rate_limit_seconds 60
 
   schema "web_push_subscriptions" do
-    field(:p256dh, :string)
-    field(:endpoint, :string)
-    field(:auth, EncryptedField)
-    field(:last_notified_at, :utc_datetime)
+    field :p256dh, :string
+    field :endpoint, :string
+    field :auth, EncryptedField
+    field :last_notified_at, :utc_datetime
 
-    belongs_to(:hub, Hub, references: :hub_id)
+    belongs_to :hub, Hub, references: :hub_id
 
     timestamps()
   end

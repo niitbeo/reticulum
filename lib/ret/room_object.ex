@@ -8,11 +8,11 @@ defmodule Ret.RoomObject do
   @primary_key {:room_object_id, :id, autogenerate: true}
 
   schema "room_objects" do
-    field(:object_id, :string)
-    field(:gltf_node, EncryptedField)
+    field :object_id, :string
+    field :gltf_node, EncryptedField
 
-    belongs_to(:hub, Hub, references: :hub_id)
-    belongs_to(:account, Account, references: :account_id)
+    belongs_to :hub, Hub, references: :hub_id
+    belongs_to :account, Account, references: :account_id
 
     timestamps()
   end

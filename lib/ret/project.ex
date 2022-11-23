@@ -10,26 +10,29 @@ defmodule Ret.Project do
   @schema_prefix "ret0"
   @primary_key {:project_id, :id, autogenerate: true}
   schema "projects" do
-    field(:project_sid, :string)
-    field(:name, :string)
-    belongs_to(:created_by_account, Ret.Account, references: :account_id)
-    belongs_to(:project_owned_file, Ret.OwnedFile, references: :owned_file_id)
-    belongs_to(:thumbnail_owned_file, Ret.OwnedFile, references: :owned_file_id)
+    field :project_sid, :string
+    field :name, :string
 
-    belongs_to(:parent_scene, Scene, references: :scene_id, on_replace: :nilify)
+    belongs_to :created_by_account, Ret.Account, references: :account_id
+    belongs_to :project_owned_file, Ret.OwnedFile, references: :owned_file_id
+    belongs_to :thumbnail_owned_file, Ret.OwnedFile, references: :owned_file_id
 
-    belongs_to(:parent_scene_listing, SceneListing,
+    belongs_to :parent_scene, Scene,
+      references: :scene_id,
+      on_replace: :nilify
+
+    belongs_to :parent_scene_listing, SceneListing,
       references: :scene_listing_id,
       on_replace: :nilify
-    )
 
-    many_to_many(:assets, Ret.Asset,
+    belongs_to :scene, Scene,
+      references: :scene_id,
+      on_replace: :nilify
+
+    many_to_many :assets, Ret.Asset,
       join_through: Ret.ProjectAsset,
       join_keys: [project_id: :project_id, asset_id: :asset_id],
       on_replace: :delete
-    )
-
-    belongs_to(:scene, Scene, references: :scene_id, on_replace: :nilify)
 
     timestamps()
   end
@@ -45,31 +48,31 @@ defmodule Ret.Project do
   end
 
   def project_by_sid_for_account(project_sid, account) do
-    from(p in Project,
-      where: p.project_sid == ^project_sid and p.created_by_account_id == ^account.account_id,
-      preload: [
-        :created_by_account,
-        :project_owned_file,
-        :thumbnail_owned_file,
-        scene: ^Scene.scene_preloads(),
-        parent_scene: ^Scene.scene_preloads(),
-        parent_scene_listing: [
-          :model_owned_file,
-          :screenshot_owned_file,
-          :scene_owned_file,
-          :project,
-          :account,
-          scene: ^Scene.scene_preloads()
-        ],
-        assets: [:asset_owned_file, :thumbnail_owned_file]
-      ]
+    Repo.one(
+      from p in Project,
+        where: p.project_sid == ^project_sid and p.created_by_account_id == ^account.account_id,
+        preload: [
+          :created_by_account,
+          :project_owned_file,
+          :thumbnail_owned_file,
+          scene: ^Scene.scene_preloads(),
+          parent_scene: ^Scene.scene_preloads(),
+          parent_scene_listing: [
+            :model_owned_file,
+            :screenshot_owned_file,
+            :scene_owned_file,
+            :project,
+            :account,
+            scene: ^Scene.scene_preloads()
+          ],
+          assets: [:asset_owned_file, :thumbnail_owned_file]
+        ]
     )
-    |> Repo.one()
   end
 
   def projects_for_account(account) do
     Repo.all(
-      from(p in Project,
+      from p in Project,
         where: p.created_by_account_id == ^account.account_id,
         preload: [
           :project_owned_file,
@@ -86,7 +89,6 @@ defmodule Ret.Project do
           ]
         ],
         order_by: [desc: p.updated_at]
-      )
     )
   end
 

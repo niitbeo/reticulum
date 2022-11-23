@@ -9,12 +9,13 @@ defmodule Ret.OwnedFile do
   @schema_prefix "ret0"
   @primary_key {:owned_file_id, :id, autogenerate: true}
   schema "owned_files" do
-    field(:owned_file_uuid, :string)
-    field(:key, :string)
-    field(:content_type, :string)
-    field(:content_length, :integer)
-    field(:state, OwnedFile.State)
-    belongs_to(:account, Account, references: :account_id)
+    field :owned_file_uuid, :string
+    field :key, :string
+    field :content_type, :string
+    field :content_length, :integer
+    field :state, OwnedFile.State
+
+    belongs_to :account, Account, references: :account_id
 
     timestamps()
   end

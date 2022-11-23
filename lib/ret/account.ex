@@ -14,16 +14,19 @@ defmodule Ret.Account do
   @schema_prefix "ret0"
   @primary_key {:account_id, :id, autogenerate: true}
   schema "accounts" do
-    field(:min_token_issued_at, :utc_datetime)
-    field(:is_admin, :boolean)
-    field(:state, Account.State)
-    has_one(:login, Login, foreign_key: :account_id)
-    has_one(:identity, Identity, foreign_key: :account_id)
-    has_many(:owned_files, Ret.OwnedFile, foreign_key: :account_id)
-    has_many(:created_hubs, Ret.Hub, foreign_key: :created_by_account_id)
-    has_many(:oauth_providers, Ret.OAuthProvider, foreign_key: :account_id)
-    has_many(:projects, Ret.Project, foreign_key: :created_by_account_id)
-    has_many(:assets, Ret.Asset, foreign_key: :account_id)
+    field :min_token_issued_at, :utc_datetime
+    field :is_admin, :boolean
+    field :state, Account.State
+
+    has_one :login, Login, foreign_key: :account_id
+    has_one :identity, Identity, foreign_key: :account_id
+
+    has_many :owned_files, Ret.OwnedFile, foreign_key: :account_id
+    has_many :created_hubs, Ret.Hub, foreign_key: :created_by_account_id
+    has_many :oauth_providers, Ret.OAuthProvider, foreign_key: :account_id
+    has_many :projects, Ret.Project, foreign_key: :created_by_account_id
+    has_many :assets, Ret.Asset, foreign_key: :account_id
+
     timestamps()
   end
 
@@ -32,10 +35,10 @@ defmodule Ret.Account do
   end
 
   def where_account_id_is(query, id) do
-    from(account in query, where: account.account_id == ^id)
+    from account in query, where: account.account_id == ^id
   end
 
-  def has_accounts?(), do: from(a in Account, limit: 1) |> Repo.exists?()
+  def has_accounts?(), do: Repo.exists?(from Account, limit: 1)
 
   def has_admin_accounts?(),
     do: from(a in Account, limit: 1) |> where(is_admin: true) |> Repo.exists?()
@@ -131,7 +134,7 @@ defmodule Ret.Account do
   end
 
   def revoke_identity!(%Account{account_id: account_id} = account) do
-    from(i in Identity, where: i.account_id == ^account_id) |> Repo.delete_all()
+    Repo.delete_all(from i in Identity, where: i.account_id == ^account_id)
     Repo.preload(account, @account_preloads, force: true)
   end
 

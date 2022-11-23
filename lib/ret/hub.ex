@@ -87,37 +87,38 @@ defmodule Ret.Hub do
   end
 
   schema "hubs" do
-    field(:name, :string)
-    field(:description, :string)
-    field(:hub_sid, :string)
-    field(:host, :string)
-    field(:last_active_at, :utc_datetime)
-    field(:creator_assignment_token, :string)
-    field(:embed_token, :string)
-    field(:embedded, :boolean)
-    field(:member_permissions, :integer)
-    field(:default_environment_gltf_bundle_url, :string)
-    field(:slug, HubSlug.Type)
-    field(:max_occupant_count, :integer, default: 0)
-    field(:spawned_object_types, :integer, default: 0)
-    field(:entry_mode, Ret.Hub.EntryMode)
-    field(:user_data, :map)
-    belongs_to(:scene, Ret.Scene, references: :scene_id, on_replace: :nilify)
+    field :name, :string
+    field :description, :string
+    field :hub_sid, :string
+    field :host, :string
+    field :last_active_at, :utc_datetime
+    field :creator_assignment_token, :string
+    field :embed_token, :string
+    field :embedded, :boolean
+    field :member_permissions, :integer
+    field :default_environment_gltf_bundle_url, :string
+    field :slug, HubSlug.Type
+    field :max_occupant_count, :integer, default: 0
+    field :spawned_object_types, :integer, default: 0
+    field :entry_mode, Ret.Hub.EntryMode
+    field :user_data, :map
+    field :allow_promotion, :boolean
+    field :room_size, :integer
 
-    belongs_to(:scene_listing, Ret.SceneListing,
+    belongs_to :created_by_account, Ret.Account, references: :account_id
+
+    belongs_to :scene, Ret.Scene,
+      references: :scene_id,
+      on_replace: :nilify
+
+    belongs_to :scene_listing, Ret.SceneListing,
       references: :scene_listing_id,
       on_replace: :nilify
-    )
 
-    has_many(:web_push_subscriptions, Ret.WebPushSubscription, foreign_key: :hub_id)
-    belongs_to(:created_by_account, Ret.Account, references: :account_id)
-    has_many(:hub_invites, Ret.HubInvite, foreign_key: :hub_id)
-    has_many(:hub_bindings, Ret.HubBinding, foreign_key: :hub_id)
-    has_many(:hub_role_memberships, Ret.HubRoleMembership, foreign_key: :hub_id)
-
-    field(:allow_promotion, :boolean)
-
-    field(:room_size, :integer)
+    has_many :web_push_subscriptions, Ret.WebPushSubscription, foreign_key: :hub_id
+    has_many :hub_invites, Ret.HubInvite, foreign_key: :hub_id
+    has_many :hub_bindings, Ret.HubBinding, foreign_key: :hub_id
+    has_many :hub_role_memberships, Ret.HubRoleMembership, foreign_key: :hub_id
 
     timestamps()
   end

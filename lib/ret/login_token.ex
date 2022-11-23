@@ -10,9 +10,9 @@ defmodule Ret.LoginToken do
   @token_max_age 1_800
 
   schema "login_tokens" do
-    field(:token, :string)
-    field(:payload_key, :string)
-    field(:identifier_hash, :string)
+    field :token, :string
+    field :payload_key, :string
+    field :identifier_hash, :string
 
     timestamps()
   end
